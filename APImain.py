@@ -346,7 +346,7 @@ def jelly(newUser_pw):
 	def search_byName(MigrationMedia,Library):
 
 		for jelly_movie in Library['Items'] :
-			if  jelly_movie['Name'] == MigrationMedia['Name']:
+			if  jelly_movie['Name'].lower().strip() == MigrationMedia['Name'].lower().strip():
 				print("found by name {0}".format(jelly_movie['Name']))
 				return jelly_movie['Id']
 		return None
@@ -359,7 +359,7 @@ def jelly(newUser_pw):
 
 			for itProv, itId in Item['ProviderIds'].items():
 				for prov, id in MigrationMedia['ProviderIds'].items():
-					if itProv.lower() == prov.lower() and itId == id:
+					if itProv.lower() == prov.lower() and str(itId) == str(id):
 						return Item['Id']
 		return None
 		
@@ -509,6 +509,15 @@ if __name__ == "__main__":
 			MigrationFile.write(json.dumps(MigrationData))
 			MigrationFile.close()
 			sys.exit(1)
+	elif tofile is not None:
+		MigrationFile.write(json.dumps(MigrationData))
+		MigrationFile.close()
+		sys.exit(1)
+	else:
+		# If we are using fromfile and not tofile, we should still populate selectedUsers
+		# so that jelly() knows which users to process.
+		for eUser in MigrationData:
+			selectedUsers.append(eUser)
 	
 	if tofile is None:
 		jelly(newUser_pw)
